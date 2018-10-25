@@ -65,6 +65,9 @@ function convertDD2DMS(deg, //a string version of the coordinage
         if (dd == 0) {
             eqpm = 'PM';
             return eqpm; 
+        } else if (dd == 180) {
+            eqpm = '180';
+            return eqpm;
         };
     } else {
         console.log('The convertDD2DMS function does not know the axis')
