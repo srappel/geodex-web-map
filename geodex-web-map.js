@@ -774,18 +774,18 @@
 				});
 				theMap.addControl(new outlineControl());
 				var colorControlHtml = '<p>Outline color: <select id="color-control-select">';
-				$.each(Geodex.map.outlineColorOptions, function(i, v) {
+				
+                //Add graticule checkbox
+                var graticuleHtml = '<p>Show Graticule Grid:  <input type="checkbox" id="graticule-control-check"></p>'
+                $('.outline-control').append(graticuleHtml);
+                
+                $.each(Geodex.map.outlineColorOptions, function(i, v) {
 					colorControlHtml += '<option value="' + v + '">' + v + '</option>';
 					if(i === (Geodex.map.outlineColorOptions.length - 1)) {
 						colorControlHtml += '</select></p>'
 						$('.outline-control').append(colorControlHtml);
 					}
 				});
-                
-                //Add graticule checkbox
-                var graticuleHtml = '<p>Show Graticule Grid:  <input type="checkbox" id="graticule-control-check"></p>'
-                $('.outline-control').append(graticuleHtml);
-                
                 
 				$('#color-control-select').css('border', '2px solid ' + Geodex.map.outlineColor);
 				var panZoomHtml = '<p>Automatic pan: <select id="panzoom-control-select">';
