@@ -824,7 +824,7 @@
                         var gratCheck = false;
                         graticule.removeFrom(theMap);
                     }
-                    console.log(gratCheck)
+                    //console.log(gratCheck)
                 });
                 
 			},
