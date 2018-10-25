@@ -668,6 +668,9 @@
                     graticule = (L.latlngGraticule({
                         showLabel: true,
                         color: 'black',
+                        weight: 0.6,
+                        opacity: 1,
+                        font: '18px Veranda',
                         zoomInterval: {   
                             latitude: [
                                 {start: 4, end: 5, interval: 10}, //Every 10 degrees
@@ -778,7 +781,7 @@
 				var colorControlHtml = '<p>Outline color: <select id="color-control-select">';
 				
                 //Add graticule checkbox
-                var graticuleHtml = '<p>Show Graticule Grid:  <input type="checkbox" id="graticule-control-check"></p>'
+                var graticuleHtml = '<p>Show graticule grid:  <input type="checkbox" id="graticule-control-check"></p>'
                 $('.outline-control').append(graticuleHtml);
                 
                 $.each(Geodex.map.outlineColorOptions, function(i, v) {
