@@ -13,7 +13,7 @@ function convertDD2DMS(deg, //a string version of the coordinage
         m = Math.floor(mm), //The floor of mm, the minutes minus decimals
         ss = (mm - m) * 60, //The fractional remains from the minutes calculation
         s = Math.floor(ss), //Effectively rounds the seconds to an integer
-        dir = '',
+        dir = deg.slice(-1),
         DMS = 'error',
         eqpm = '';
     
@@ -55,36 +55,17 @@ function convertDD2DMS(deg, //a string version of the coordinage
     
     if (axis === 'lat') {
         //Do things if we're talking latitude
-        if (dd > 0) {
-            dir = 'N';
-        } else if (dd < 0) {
-            dir = 'S';
-        } else {
+        if (dd == 0) {
             eqpm = 'Equator';
             return eqpm;
-        }
+        }; 
+        
     } else if (axis === 'lng') {
         //Do things if we're talking longitude
-        if (dd > 0) {
-            if (dd < 180) {
-                dir = 'E';
-            } else if (dd > 180) {
-                //Classic international date line issue
-                console.log('International date line issue while running convertDD2DMS function in Leaflet.Graticule.js')
-                return;
-            }
-        } else if (dd < 0) {
-            if (dd > -180) {
-                dir = 'W'
-            } else if (dd < -180) {
-                //Classic international date line issue
-                console.log('International date line issue while running convertDD2DMS function in Leaflet.Graticule.js')
-                return;
-            }
-        } else {
+        if (dd == 0) {
             eqpm = 'PM';
-            return eqpm;
-        }
+            return eqpm; 
+        };
     } else {
         console.log('The convertDD2DMS function does not know the axis')
     };      
