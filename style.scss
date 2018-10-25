@@ -1,0 +1,428 @@
+$gold: darken(#ffbd00, 5%);
+$blue: lighten(#1e6e9c, 8%);
+$grey: #aaa;
+
+$column-separation-border: 2px solid lighten($gold, 1%); // the border separating the two columns
+
+$primary-button-color: $blue;
+
+/* Set everything to box-sizing: border-box unless specified otherwise */
+html {
+	box-sizing: border-box;
+}
+
+*, *::before, *::after {
+	box-sizing: inherit;
+}
+
+/*
+--- Main page structural elements ---
+ */
+ 
+html, body {
+	height: 100%;
+}
+ 
+main {
+	min-height: 100%;
+	height: 100%;
+}
+
+#map {
+	height: 100%;
+	border-left: $column-separation-border;
+}
+
+#map-row {
+	height: 100%;
+}
+
+#search-column {
+	max-height: 100%;
+	overflow: auto;
+	padding: 0;
+}
+
+.nav-tabs, .tab-content {
+	padding: 0 1.2em;
+}
+
+.collapse-link {
+	display: none;
+}
+
+#toggle-pane-link {
+	display: none;
+}
+
+/*
+--- Buttons and forms ---
+*/
+
+.btn-primary {
+	background: $primary-button-color;
+	border: 1px solid darken($primary-button-color, 20%);
+	font-size: 1.15em;
+	text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.btn-primary:hover {
+	background: darken($primary-button-color, 10%);
+}
+
+/*
+--- Headings ---
+*/
+
+h1 {
+	background: lighten($gold, 1%);
+	font-size: 2em;
+	color: white;
+	padding: 0.5em;
+	margin-bottom: 1em;
+	text-align: center;
+	text-shadow: 2px 2px 7px rgba(0, 0, 0, 0.5);
+	margin-top: 0;
+	position: relative;
+}
+
+h2 {
+	font-size: 1.5em;
+}
+
+/*
+--- Search ---
+*/
+
+#search-parameters {
+	
+	h2 {
+		margin-top: 1.833em;
+		margin-bottom: 1em;
+		padding-bottom: 0.2em;
+		font-weight: bold;
+		color: darken($gold, 12%);
+		border-bottom: 1px solid lighten($gold, 40%);
+	}
+	
+}
+
+#search-geodex-button {
+	margin-top: 1em;
+}
+
+#series-list, #publishers-list {
+	max-width: 100%;
+}
+
+#years-not-in-order {
+	display: none;
+}
+
+#series-to-be-searched, #publishers-to-be-searched {
+	width: 100%;
+}
+
+.series-span {
+	display: block;
+	width: 100%;
+	background-color: lighten($gold, 40%);
+	margin-bottom: 0.5em;
+	padding: 0.25em 18px 0.25em 0.5em;
+	position: relative;
+	
+	.close {
+		position: absolute;
+		right: 7px;
+		top: 3px;
+	}
+}
+
+.publisher-span {
+	display: block;
+	width: 100%;
+	background-color: lighten($blue, 47%);
+	margin-bottom: 0.5em;
+	padding: 0.25em 18px 0.25em 0.5em;
+	position: relative;
+	
+	.close {
+		position: absolute;
+		right: 7px;
+		top: 3px;
+	}
+}
+
+form em {
+	font-size: 1em;
+	color: #777; 
+}
+
+#exclude-large-area-toggle {
+	display: none;
+}
+
+/*
+--- Records lists ---
+*/
+
+.list-group {
+
+	.list-group-item {
+		overflow: auto;
+	}
+	
+	.list-group-item:hover{
+		background-color: lighten($grey, 25%);
+	}
+
+	.attr-modal-link, .show-map-outline-link {
+		display: block;
+		float: left;
+		margin-right: 1em;
+	}
+	
+	.bookmark-link {
+		color: darken($gold, 8%);
+		position: absolute;
+		top: 0.66em;
+		right: 1em;
+	}
+	
+	.search-result {
+		float: left;
+	}
+
+}
+
+.modal-lg {
+	min-width: 900px;
+	width: 50%;
+}
+
+/*
+--- Saved records & bookmarks
+*/
+
+#update-saved-records-list {
+	font-weight: bold;
+	margin-bottom: 1em;
+	font-size: 1.25em;
+}
+
+#no-saved-records {
+	margin: 0;
+}
+
+#saved-records-list {
+	padding-left: 0;
+	margin-top: 1em;
+}
+
+
+/*
+--- Attribute table ---
+*/
+
+thead {
+	font-weight: bold;
+	color: $blue;
+	font-size: 1.33em;
+}
+
+tbody {
+	font-size: 0.9em;
+}
+
+.null-value{
+	color: #bbb;
+	font-style: italic;
+}
+
+/*
+--- Export table ---
+*/
+
+.table {
+	margin-bottom: 0;
+}
+
+#export-table thead, #export-table tbody{
+	display: none; 
+}
+
+/*
+--- Custom controls ---
+*/
+
+.outline-control, .coordinate-search-control {
+	font-size: 0.9em;
+	background-color: white;
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	padding: 1em 1em 0.5em;
+	
+	p, a {
+		font-size: 1.33em;
+		margin-bottom: 0.5em;
+	}
+}
+
+.agsl-control {
+	width: 200px;
+	
+	img {
+		width: 100%;
+	}
+}
+
+/*
+--- Collapse/expand column ---
+*/
+
+.collapsed { // left column
+	height: 10vh !important;
+	overflow-y: hidden !important;
+	
+	* {
+		display: none;
+	}
+	
+	.collapse-link {
+		display: block;
+		position: fixed;
+	}
+}
+
+.expanded { // map
+	height: 90vh !important;
+}
+
+/*
+--- Print and view only table ---
+*/
+
+@media print {
+
+	#map, h1, .nav, #search-parameters, #search-results, #bookmarks>h2, #saved-records-list, #update-saved-records-list, .xls, #print {
+		display: none;
+	}
+	
+	#export-table thead {
+		display: table-header-group;
+		width: 100%;
+	}
+	
+	#export-table tbody {
+		display: table-row-group;
+		width: 100%;
+	}
+}
+
+/*
+--- 1800px breakpoint: adjust nav tabs display ---
+*/
+
+@media screen and (max-width: 1800px) {
+	
+	.nav-tabs i {
+		display: none;
+	}
+	
+}
+
+/*
+--- 1518px breakpoint: when some elements need to be smaller, until 'md' kicks in ---
+*/
+
+@media screen and (max-width: 1518px) and (min-width: 1200px) {
+
+	.nav>li>a {
+		font-size: 0.9em;
+		padding: 0.4em;
+	}
+	
+	h1 {
+		font-size: 1.75em;
+	}
+	
+	h2 {
+		font-size: 1.33em;
+		font-weight: 500;
+	}
+	
+	h3 {
+		font-size: 1.2em;
+		font-weight: bold;
+	}
+	
+	.list-group {
+
+		.attr-modal-link, .show-map-outline-link, .bookmark-link {
+			display: block;
+			float: left;
+			width: 33%;
+			text-align: center;
+			margin: 0;
+			position: initial;
+			padding: 0.33em;
+			margin-bottom: 0.5em;
+		}
+		
+		.search-result {
+			font-size: 1.1em;
+		}
+
+	}
+
+}
+
+/*
+--- 1199px breakpoint: bootstrap 'md' ---
+*/
+
+@media screen and (max-width: 1199px) {
+
+	$toggleHeight: 7vh;
+
+	#map {
+		display: none;
+		height: (100vh - $toggleHeight);
+		margin-top: $toggleHeight;
+		border: 0;
+	}
+	
+	#search-column {
+		height: (100vh - $toggleHeight);
+		margin-top: $toggleHeight;
+	}
+	
+	.nav-tabs {
+		margin-top: 1em;
+	}
+	
+	h1 {
+		display: none;
+	}
+	
+	#toggle-pane-link {
+		display: block;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: $toggleHeight;
+		background: fuchsia;
+		text-align: center;
+		background: $gold;
+		color: white;
+		font-size: ($toggleHeight - 3.5);
+		text-decoration: none;
+		padding-top: ($toggleHeight - ($toggleHeight - 1));
+	}
+	
+	.outline-control, .coordinate-search-control {
+		display: none;
+	}
+
+}
