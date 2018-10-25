@@ -1,11 +1,11 @@
 /*
 --- the global Geodex object ---
 */
-
 	var Geodex = {
 		
 		initialize: function() {
-			var theMap; // has to be declared here because of all the methods that use it
+			var theMap, // has to be declared here because of all the methods that use it
+                graticule = {}; //This also has to be declared here to manage scope (see Geodex.map.graticule)
 			this.vocab.defineAttributes(); // get all of the attribute vocabulary
 			this.years.populate(); // populate the "years" drop-downs dynamically
 			this.series.getAll(); // populate the "series" drop-down dynamically
@@ -22,7 +22,7 @@
 			};
 		},
         
-		
+        
 		//=====================================================//
 		
 		years: {
@@ -644,8 +644,14 @@
 				});
 				searchControl.addTo(theMap);
 			},
-			// when user first loads the page, the map is set to this view
-			defaultView: {
+			
+            
+            
+            
+            // when user first loads the page, the map is set to this view   
+            
+            
+            defaultView: {
 				coordinates: [43.380099, -91.252441],
 				zoom: 4
 			},
@@ -656,7 +662,37 @@
 				min: 4,
 				max: 19
 			},
-			// an object containing all of the basemaps, to be cycled through dynamically
+            
+            graticule: {
+                define: function() {
+                    graticule = (L.latlngGraticule({
+                        showLabel: true,
+                        color: 'black',
+                        zoomInterval: {   
+                            latitude: [
+                                {start: 4, end: 5, interval: 10}, //Every 10 degrees
+                                {start: 6, end: 9, interval: 1}, //Every 1 degrees
+                                {start: 10, end: 11, interval: 1/6}, // every 10 minutes
+                                {start: 12, end: 13, interval: 1/12}, // every 5 minutes
+                                {start: 14, end: 15, interval: 1/60}, //every minute
+                                {start: 16, end: 19, interval: 1/120} // every 30 seconds (recommend using sec = true)
+                            ],
+                            longitude: [
+                                {start: 4, end: 5, interval: 10}, //Every 10 degrees
+                                {start: 6, end: 9, interval: 1}, //Every 1 degrees
+                                {start: 10, end: 11, interval: 1/6}, // every 10 minutes
+                                {start: 12, end: 13, interval: 1/12}, // every 5 minutes
+                                {start: 14, end: 15, interval: 1/60}, //every minute
+                                {start: 16, end: 19, interval: 1/120} // every 30 seconds (recommend using sec = true)
+                            ]
+                        }
+                    }));
+                    return graticule
+                }
+            },
+            
+            
+            // an object containing all of the basemaps, to be cycled through dynamically
 			basemaps: {
 				defaultBasemap: 'Esri World Topographic Map',
 				data: [
@@ -682,6 +718,8 @@
 					}
 				],
 				// load all of the basemaps dynamically!
+
+                
 				load: function() {
 					var basemapsObject = {};
 					$.each(Geodex.map.basemaps.data, function(i, v){
@@ -695,6 +733,8 @@
 					var basemapsControl = L.control.layers(basemapsObject).addTo(theMap);
 				}
 			},
+
+            
 			// is a search outline currently visible on the map?
 			hasSearchResultOutline: false,
 			// does the user want to disable auto-zoom?
@@ -706,6 +746,7 @@
 				theMap = L.map('map')
 					.setView(Geodex.map.defaultView.coordinates, Geodex.map.defaultView.zoom)
 					.setMaxBounds(Geodex.map.maxBounds);
+                
 				Geodex.map.basemaps.load();
 				Geodex.map.addGeocoder();
 				Geodex.map.addOutlineControl();
@@ -740,6 +781,12 @@
 						$('.outline-control').append(colorControlHtml);
 					}
 				});
+                
+                //Add graticule checkbox
+                var graticuleHtml = '<p>Show Graticule Grid:  <input type="checkbox" id="graticule-control-check"></p>'
+                $('.outline-control').append(graticuleHtml);
+                
+                
 				$('#color-control-select').css('border', '2px solid ' + Geodex.map.outlineColor);
 				var panZoomHtml = '<p>Automatic pan: <select id="panzoom-control-select">';
 				$.each(Geodex.map.panZoomOptions, function(i, v) {
@@ -749,6 +796,8 @@
 						$('.outline-control').append(panZoomHtml);
 					}
 				});
+                
+                
 				var returnToExtentHtml = '<a href="#" id="return-to-search-extent" style="display:none;">Return to search extent</a>';
 				$('.outline-control').append(returnToExtentHtml);
 				$('#color-control-select').change(function() {
@@ -764,6 +813,20 @@
 					Geodex.map.zoomLock = Geodex.map.panZoomOptions[userOption].zoomlock;
 					Geodex.map.panLock = Geodex.map.panZoomOptions[userOption].panlock;
 				});
+                
+                //graticule checkbox change function
+                $('#graticule-control-check').change(function(){
+                    if ( $(this).is(':checked') ) {
+                        var gratCheck = true;
+                        Geodex.map.graticule.define();
+                        graticule.addTo(theMap);
+                    } else {
+                        var gratCheck = false;
+                        graticule.removeFrom(theMap);
+                    }
+                    console.log(gratCheck)
+                });
+                
 			},
 			// function to add AGSL logo to se corner of map frame
 			addAgslLogo: function () {
@@ -787,6 +850,7 @@
 				{label: 'Pan to outline if outside extent', zoomlock: true, panlock: false},
 				{label: 'No automatic panning or zooming', zoomlock: true, panlock: true}
 				],
+            
 			// function for removing feature outline from the map
 			removeFeatureOutline: function() {
 				temporaryLayerGroup.remove();
@@ -1110,3 +1174,14 @@
 			$('#map').hide();
 		}
 	});
+
+
+//function onMapClick(e) {
+//    console.log("You clicked the map at " + e.latlng);
+
+    //Adds click to print zoom level to console
+//    console.log('The Zoom Level is:' + theMap.getZoom());
+//}
+
+//theMap.on('click', onMapClick);    
+
