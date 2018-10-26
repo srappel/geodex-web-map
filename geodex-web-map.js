@@ -786,7 +786,7 @@
                 //Add graticule checkbox, formatted as a slider switch
                 var graticuleHtmlSlider = '';
 
-                graticuleHtmlSlider = '<p>Show graticule grid: <label class="switch"><input type="checkbox" id="graticule-control-check"><span class="slider"></span></label></p>'
+                graticuleHtmlSlider = '<p>Show graticule grid: <label class="switch"><input type="checkbox" id="graticule-control-check"><span class="slider round"></span></label></p>'
                 $('.outline-control').append(graticuleHtmlSlider);
                                 
                 $.each(Geodex.map.outlineColorOptions, function(i, v) {
