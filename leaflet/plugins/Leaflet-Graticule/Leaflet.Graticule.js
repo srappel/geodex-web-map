@@ -1,38 +1,49 @@
-//Adds function to convert DD to DMS for prettier output.
+/**
+*  This top section written by Stephen Appel for the Geodex Web Map at the AGS Library
+*  It's a dirty DD to DMS converter that really only works for this specific plugin
+*  but could be adopted.  srappel@uwm.edu
+*  Changed items can be found by searching for "//SRA"
+*                                      
+*         *** Adds function to convert DD to DMS for prettier labels on the graticule image overlay ***
+*/
 
 //Should we convert DD to DMS?
- var convert = true;
+ var convert = true; //This actually changes stuff in the plugin source code
+                        //effectively disables my section of the code
 
 
 function convertDD2DMS(deg, //a string version of the coordinage
                         axis) { //lat or long?
-    //All the calculations done in this var algebra
+    
+    //***Many calculations done in this var algebra***
     var dd = parseFloat(deg), // The float version of the input coordinate
         d = Math.floor(dd), //The floor of dd, The degree minus all the decimals
         mm = (dd - d) * 60, //The fractional remains after finding the floor of dd, x 60
         m = Math.floor(mm), //The floor of mm, the minutes minus decimals
         ss = (mm - m) * 60, //The fractional remains from the minutes calculation
         s = Math.floor(ss), //Effectively rounds the seconds to an integer
-        dir = deg.slice(-1),
-        DMS = 'error',
-        eqpm = '';
+        dir = deg.slice(-1), //The "deg" input actually has a N, S, E, or W calculated by the plugin.  This grabs it.
+        DMS = 'error', //This can probably be eliminted eventually.  It's just for debugging.
+        eqpm = '', //This variable gets used below for special lines (PM, Equator, and 180) (Can probably be refactored out)
+        showMin = true,//Sets the default for this switch
+        showSec = false, //Same as above
+        currentZoom = theMap.getZoom(); //Gets the current map zoom level for determining formatting
     
-    var showMin = true;
-    var showSec = false;
-    var currentZoom = theMap.getZoom();
-    if (currentZoom < 10) {
+    //Here you can adjust the zoom level to include or exclude *Minutes* in the label
+    if (currentZoom < 9) {
         showMin = false;
-    } else if (currentZoom >= 10) {
+    } else if (currentZoom >= 9) {
         showMin = true;
     }
     
+    //Here you can adjust the zoom level to include or exclude *Seconds* in the label
     if (currentZoom >= 16) {
         showSec = true;
     } else {
         showSec = false;
     }
     
-    //Dealing with the rounding issue.......
+    //Dealing with an annoying rounding bug
     if ( s >= 59 ) {
         s = 0;
         m += 1;
@@ -48,33 +59,31 @@ function convertDD2DMS(deg, //a string version of the coordinage
     };
     
     
-    //All these if statements figure out if we're talking E, W, S, or N for the label text
+    //This is just a fail safe for debugging
     if ( convert === false ) {
         return deg
     };
     
-    if (axis === 'lat') {
-        //Do things if we're talking latitude
+    //These are for the special cases (PM, EQ, and 180deg {Special Char for degree is \xB0})
+    if (axis === 'lat') { //Assigns Equator label
         if (dd == 0) {
             eqpm = 'Equator';
             return eqpm;
         }; 
         
-    } else if (axis === 'lng') {
-        //Do things if we're talking longitude
+    } else if (axis === 'lng') { //Assigns Prime Meridian Label
         if (dd == 0) {
             eqpm = 'PM';
             return eqpm; 
-        } else if (dd == 180) {
-            eqpm = '180';
+        } else if (dd == 180) { //Assigns 180th Meridian Label (No cardinal direction)
+            eqpm = '180\xB0';
             return eqpm;
         };
-    } else {
+    } else { //Probably unecessary, but a good fail safe for debugging
         console.log('The convertDD2DMS function does not know the axis')
     };      
     
-    
-    //finally we build the string...
+    //finally we build the string for the label
     if (showSec === true) {
         DMS = d + '\xB0 ' + m + '" ' + s + "' " + dir;
     } else if (showMin === false) {
@@ -83,17 +92,16 @@ function convertDD2DMS(deg, //a string version of the coordinage
         DMS = d + '\xB0 ' + m + '" ' + dir;
     };
     
-    //Variables to change are 'lngstr' and 'latstr'
     return DMS;
 }
-//convertDD2DMS(lagstr, 'lat', false)
-
-
 
 /**
 *  Create a Canvas as ImageOverlay to draw the Lat/Lon Graticule,
 *  and show the axis tick label on the edge of the map.
 *  Author: lanwei@cloudybay.com.tw
+*
+*  Some edits by Stephen Appel to make the code below jive with my converter above
+*  And also some edits to turn off right and bottom labels
 */
 
 L.LatLngGraticule = L.Layer.extend({
@@ -480,12 +488,12 @@ L.LatLngGraticule = L.Layer.extend({
                             if (_prev_p.x < 0 && rr.x >= 0) {
                                 var _s = (rr.x - 0) / (rr.x - _prev_p.x);
                                 var _y = rr.y - ((rr.y - _prev_p.y) * _s);
-                                ctx.fillText(convertDD2DMS(latstr, 'lat'), 0, _y + (txtHeight/2));
+                                ctx.fillText(convertDD2DMS(latstr, 'lat'), 0, _y + (txtHeight/2));//SRA
                             }
                             else if (_prev_p.x <= (ww-txtWidth) && rr.x > (ww-txtWidth)) {
                                 var _s = (rr.x - ww) / (rr.x - _prev_p.x);
                                 var _y = rr.y - ((rr.y - _prev_p.y) * _s);
-                                ctx.fillText(convertDD2DMS(latstr, 'lat'), ww-txtWidth, _y + (txtHeight/2)-2);
+                                ctx.fillText(convertDD2DMS(latstr, 'lat'), ww-txtWidth, _y + (txtHeight/2)-2);//SRA
                             }
                         }
 
@@ -512,7 +520,7 @@ L.LatLngGraticule = L.Layer.extend({
                     ctx.stroke();
                     if (self.options.showLabel && label) {
                         var _yy = ll.y + (txtHeight/2)-2;
-                        ctx.fillText(convertDD2DMS(latstr, 'lat'), 0, _yy);
+                        ctx.fillText(convertDD2DMS(latstr, 'lat'), 0, _yy);//SRA
                         //Uncomment to include the right graticule labels
                         //ctx.fillText(convertDD2DMS(latstr, 'lat'), ww-txtWidth, _yy);
                     }
@@ -551,10 +559,10 @@ L.LatLngGraticule = L.Layer.extend({
 
                         if (self.options.showLabel && label && _prev_p != null) {
                             if (_prev_p.y > 8 && tt.y <= 8) {
-                                ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), txtHeight);
+                                ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), txtHeight);//SRA
                             }
                             else if (_prev_p.y >= hh && tt.y < hh) {
-                                ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), hh-2);
+                                ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), hh-2);//SRA
                             }
                         }
 
@@ -583,7 +591,7 @@ L.LatLngGraticule = L.Layer.extend({
                     ctx.stroke();
 
                     if (self.options.showLabel && label) {
-                        ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), txtHeight+1);
+                        ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), txtHeight+1);//SRA
                         //Uncomment to include the bottom graticule labels
                         //ctx.fillText(convertDD2DMS(lngstr, 'lng'), bb.x - (txtWidth/2), hh-3);
                     }
