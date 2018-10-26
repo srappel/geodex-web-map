@@ -668,7 +668,7 @@
                     graticule = (L.latlngGraticule({
                         showLabel: true,
                         color: 'black',
-                        weight: 0.6,
+                        weight: 0.8,
                         opacity: 1,
                         font: '18px Veranda',
                         zoomInterval: {   
@@ -779,6 +779,7 @@
 						return container;
 					}
 				});
+                
 				theMap.addControl(new outlineControl());
 				var colorControlHtml = '<p>Outline color: <select id="color-control-select">';
 				
