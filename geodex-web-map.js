@@ -673,18 +673,20 @@
                         font: '18px Veranda',
                         zoomInterval: {   
                             latitude: [
-                                {start: 4, end: 5, interval: 10}, //Every 10 degrees
-                                {start: 6, end: 7, interval: 5}, //Every 5 degrees
-                                {start: 8, end: 9, interval: 1}, //Every 1 degrees
+                                {start: 4, end: 4, interval: 10}, //Every 10 degrees
+                                {start: 5, end: 6, interval: 5}, //Every 5 degrees
+                                {start: 7, end: 8, interval: 1}, //Every 1 degrees
+                                {start: 9, end: 9, interval: 1/2}, //Every 30 minutes
                                 {start: 10, end: 11, interval: 1/6}, // every 10 minutes
                                 {start: 12, end: 13, interval: 1/12}, // every 5 minutes
                                 {start: 14, end: 15, interval: 1/60}, //every minute
                                 {start: 16, end: 19, interval: 1/120} // every 30 seconds (recommend using sec = true)
                             ],
                             longitude: [
-                                {start: 4, end: 5, interval: 10}, //Every 10 degrees
-                                {start: 6, end: 7, interval: 5}, //Every 5 degrees
-                                {start: 8, end: 9, interval: 1}, //Every 1 degrees
+                                {start: 4, end: 4, interval: 10}, //Every 10 degrees
+                                {start: 5, end: 6, interval: 5}, //Every 5 degrees
+                                {start: 7, end: 8, interval: 1}, //Every 1 degrees
+                                {start: 9, end: 9, interval: 1/2}, //Every 30 minutes
                                 {start: 10, end: 11, interval: 1/6}, // every 10 minutes
                                 {start: 12, end: 13, interval: 1/12}, // every 5 minutes
                                 {start: 14, end: 15, interval: 1/60}, //every minute
