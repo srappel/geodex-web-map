@@ -783,10 +783,12 @@
 				theMap.addControl(new outlineControl());
 				var colorControlHtml = '<p>Outline color: <select id="color-control-select">';
 				
-                //Add graticule checkbox
-                var graticuleHtml = '<p>Show graticule grid:  <input type="checkbox" id="graticule-control-check"></p>'
-                $('.outline-control').append(graticuleHtml);
-                
+                //Add graticule checkbox, formatted as a slider switch
+                var graticuleHtmlSlider = '';
+
+                graticuleHtmlSlider = '<p>Show graticule grid: <label class="switch"><input type="checkbox" id="graticule-control-check"><span class="slider"></span></label></p>'
+                $('.outline-control').append(graticuleHtmlSlider);
+                                
                 $.each(Geodex.map.outlineColorOptions, function(i, v) {
 					colorControlHtml += '<option value="' + v + '">' + v + '</option>';
 					if(i === (Geodex.map.outlineColorOptions.length - 1)) {
@@ -804,7 +806,6 @@
 						$('.outline-control').append(panZoomHtml);
 					}
 				});
-                
                 
 				var returnToExtentHtml = '<a href="#" id="return-to-search-extent" style="display:none;">Return to search extent</a>';
 				$('.outline-control').append(returnToExtentHtml);
