@@ -22,7 +22,7 @@ main {
   position: relative;
   display: inline-block;
   width: 30px;
-  height: 17px;
+  height: 18px;
 }
 
 .switch input { 
@@ -38,7 +38,7 @@ main {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #a3a3a3; 
+  background-color: #474d52; 
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -108,7 +108,7 @@ input:checked + .slider:before {
 }
 
 .btn-primary {
-	background: #2586be;
+	background: #5382af;
 	border: 1px solid #144a69;
 	font-size: 1.15em;
 	text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.45)
@@ -139,7 +139,7 @@ h2 {
 	margin-bottom: 1em;
 	padding-bottom: 0.2em;
 	font-weight: bold;
-	color: black;
+	color: 474d52;
 	border-bottom: 1px solid #ffebb3
 }
 
