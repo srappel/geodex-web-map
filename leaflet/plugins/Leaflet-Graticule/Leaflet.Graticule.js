@@ -321,7 +321,7 @@ L.LatLngGraticule = L.Layer.extend({
             return '' + (lng*-1);
         }
         else if (lng < -180) {
-            return '' + (360 + lng) + 'W';
+            return '' + (360 + lng) + 'E';//SRA (fixed the bug by changing W to E here)
         }
         return '' + lng;
     },
