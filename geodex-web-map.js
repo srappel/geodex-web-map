@@ -668,6 +668,7 @@
                     graticule = (L.latlngGraticule({
                         showLabel: true,
                         color: 'black',
+                        dmd: true,
                         weight: 0.8,
                         opacity: 1,
                         font: '18px Veranda',

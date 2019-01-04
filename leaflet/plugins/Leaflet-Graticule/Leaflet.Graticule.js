@@ -1,107 +1,7 @@
 /**
-*  This top section written by Stephen Appel for the Geodex Web Map at the AGS Library
-*  It's a dirty DD to DMS converter that really only works for this specific plugin
-*  but could be adopted.  srappel@uwm.edu
-*  Changed items can be found by searching for "//SRA"
-*                                      
-*         *** Adds function to convert DD to DMS for prettier labels on the graticule image overlay ***
-*/
-
-//Should we convert DD to DMS?
- var convert = true; //This actually changes stuff in the plugin source code
-                        //effectively disables my section of the code
-
-
-function convertDD2DMS(deg, //a string version of the coordinage
-                        axis) { //lat or long?
-    
-    //***Many calculations done in this var algebra***
-    var dd = parseFloat(deg), // The float version of the input coordinate
-        d = Math.floor(dd), //The floor of dd, The degree minus all the decimals
-        mm = (dd - d) * 60, //The fractional remains after finding the floor of dd, x 60
-        m = Math.floor(mm), //The floor of mm, the minutes minus decimals
-        ss = (mm - m) * 60, //The fractional remains from the minutes calculation
-        s = Math.floor(ss), //Effectively rounds the seconds to an integer
-        dir = deg.slice(-1), //The "deg" input actually has a N, S, E, or W calculated by the plugin.  This grabs it.
-        DMS = 'error', //This can probably be eliminted eventually.  It's just for debugging.
-        eqpm = '', //This variable gets used below for special lines (PM, Equator, and 180) (Can probably be refactored out)
-        showMin = true,//Sets the default for this switch
-        showSec = false, //Same as above
-        currentZoom = theMap.getZoom(); //Gets the current map zoom level for determining formatting
-    
-    //Here you can adjust the zoom level to include or exclude *Minutes* in the label
-    if (currentZoom < 9) {
-        showMin = false;
-    } else if (currentZoom >= 9) {
-        showMin = true;
-    }
-    
-    //Here you can adjust the zoom level to include or exclude *Seconds* in the label
-    if (currentZoom >= 16) {
-        showSec = true;
-    } else {
-        showSec = false;
-    }
-    
-    //Dealing with an annoying rounding bug
-    if ( s >= 59 ) {
-        s = 0;
-        m += 1;
-    };
-    
-    if ( m >= 59 ) {
-        m = 0;
-        d += 1;
-    };
-    
-    if ( s == 29 ) {
-        s = 30;
-    };
-    
-    
-    //This is just a fail safe for debugging
-    if ( convert === false ) {
-        return deg
-    };
-    
-    //These are for the special cases (PM, EQ, and 180deg {Special Char for degree is \xB0})
-    if (axis === 'lat') { //Assigns Equator label
-        if (dd == 0) {
-            eqpm = 'Equator';
-            return eqpm;
-        }; 
-        
-    } else if (axis === 'lng') { //Assigns Prime Meridian Label
-        if (dd == 0) {
-            eqpm = 'PM';
-            return eqpm; 
-        } else if (dd == 180) { //Assigns 180th Meridian Label (No cardinal direction)
-            eqpm = '180\xB0';
-            return eqpm;
-        };
-    } else { //Probably unecessary, but a good fail safe for debugging
-        console.log('The convertDD2DMS function does not know the axis')
-    };      
-    
-    //finally we build the string for the label
-    if (showSec === true) {
-        DMS = d + '\xB0 ' + m + '" ' + s + "' " + dir;
-    } else if (showMin === false) {
-        DMS = d + '\xB0 ' + dir;
-    } else {
-        DMS = d + '\xB0 ' + m + '" ' + dir;
-    };
-    
-    return DMS;
-}
-
-/**
 *  Create a Canvas as ImageOverlay to draw the Lat/Lon Graticule,
 *  and show the axis tick label on the edge of the map.
 *  Author: lanwei@cloudybay.com.tw
-*
-*  Some edits by Stephen Appel to make the code below jive with my converter above
-*  And also some edits to turn off right and bottom labels
 */
 
 L.LatLngGraticule = L.Layer.extend({
@@ -113,6 +13,8 @@ L.LatLngGraticule = L.Layer.extend({
         font: '12px Verdana',
         lngLineCurved: 0,
         latLineCurved: 0,
+        dmd: false, // Labels: Display Degrees - Decimal Minutes instead of Decimal Degrees
+        precision: 4, // Lat and Lon precision
         zoomInterval: [
             {start: 2, end: 2, interval: 40},
             {start: 3, end: 3, interval: 20},
@@ -287,19 +189,57 @@ L.LatLngGraticule = L.Layer.extend({
         L.DomUtil.setOpacity(this._canvas, this.options.opacity);
     },
 
+    // todo: Decimal degrees to Degrees - Decimal Minutes
+    __deg_to_dmd: function(deg) {
+
+        var d = Math.floor (deg);
+        var minfloat = (deg - d) * 60;
+        var min = minfloat.toFixed(1);
+
+        if (min == 60.0) {
+            d ++;
+            min = 0.0;
+        }
+
+        if (min == 0.0){
+            return ('' + d + '°');
+        }
+
+        if ((min % 1).toFixed(1) == 0.0) {
+            min = minfloat.toFixed(0).toString(10).padStart(2, '0');
+        }
+        else {
+            min = minfloat.toFixed(1).toString(10).padStart(4, '0');
+        }
+        
+        return ('' + d + '°' + min + "'");
+    },
+
     __format_lat: function(lat) {
         if (this.options.latFormatTickLabel) {
             return this.options.latFormatTickLabel(lat);
         }
 
-        // todo: format type of float
-        if (lat < 0) {
-            return '' + (lat*-1) + 'S';
+        if (this.options.dmd) {
+            if (lat < 0) {
+                return this.__deg_to_dmd(lat * -1) + ' S';
+            }
+            else if (lat > 0) {
+                return this.__deg_to_dmd(lat) + ' N';
+            }
+            return this.__deg_to_dmd(lat);
         }
-        else if (lat > 0) {
-            return '' + lat + 'N';
+        else {
+            // todo: format type of float
+            if (lat < 0) {
+                return '' + (lat*-1).toFixed(this.options.precision) + 'S';
+            }
+            else if (lat > 0) {
+                return '' + lat.toFixed(this.options.precision) + 'N';
+            }
+            return '' + lat.toFixed(this.options.precision);
+
         }
-        return '' + lat;
     },
 
     __format_lng: function(lng) {
@@ -307,23 +247,44 @@ L.LatLngGraticule = L.Layer.extend({
             return this.options.lngFormatTickLabel(lng);
         }
 
-        // todo: format type of float
-        if (lng > 180) {
-            return '' + (360 - lng) + 'W';
+        if (this.options.dmd) {
+            // todo: format type of float
+            if (lng > 180) {
+                return this.__deg_to_dmd(360 - lng) + ' W';
+            }
+            else if (lng > 0 && lng < 180) {
+                return this.__deg_to_dmd(lng) + ' E';
+            }
+            else if (lng < 0 && lng > -180) {
+                return this.__deg_to_dmd(lng*-1) + ' W';
+            }
+            else if (lng == -180) {
+                return this.__deg_to_dmd(lng*-1);
+            }
+            else if (lng < -180) {
+                return '' + this.__deg_to_dmd(360 + lng) + ' W';
+            }
+            return this.__deg_to_dmd(lng);            
         }
-        else if (lng > 0 && lng < 180) {
-            return '' + lng + 'E';
+        else {
+            // todo: format type of float
+            if (lng > 180) {
+                return '' + (360 - lng).toFixed(this.options.precision) + 'W';
+            }
+            else if (lng > 0 && lng < 180) {
+                return '' + lng.toFixed(this.options.precision) + 'E';
+            }
+            else if (lng < 0 && lng > -180) {
+                return '' + (lng*-1).toFixed(this.options.precision) + 'W';
+            }
+            else if (lng == -180) {
+                return '' + (lng*-1).toFixed(this.options.precision);
+            }
+            else if (lng < -180) {
+                return '' + (360 + lng).toFixed(this.options.precision) + 'W';
+            }
+            return '' + lng.toFixed(this.options.precision);
         }
-        else if (lng < 0 && lng > -180) {
-            return '' + (lng*-1) + 'W';
-        }
-        else if (lng == -180) {
-            return '' + (lng*-1);
-        }
-        else if (lng < -180) {
-            return '' + (360 + lng) + 'E';//SRA (fixed the bug by changing W to E here)
-        }
-        return '' + lng;
     },
 
     __calcInterval: function() {
@@ -488,12 +449,12 @@ L.LatLngGraticule = L.Layer.extend({
                             if (_prev_p.x < 0 && rr.x >= 0) {
                                 var _s = (rr.x - 0) / (rr.x - _prev_p.x);
                                 var _y = rr.y - ((rr.y - _prev_p.y) * _s);
-                                ctx.fillText(convertDD2DMS(latstr, 'lat'), 0, _y + (txtHeight/2));//SRA
+                                ctx.fillText(latstr, 0, _y + (txtHeight/2));
                             }
                             else if (_prev_p.x <= (ww-txtWidth) && rr.x > (ww-txtWidth)) {
                                 var _s = (rr.x - ww) / (rr.x - _prev_p.x);
                                 var _y = rr.y - ((rr.y - _prev_p.y) * _s);
-                                ctx.fillText(convertDD2DMS(latstr, 'lat'), ww-txtWidth, _y + (txtHeight/2)-2);//SRA
+                                ctx.fillText(latstr, ww-txtWidth, _y + (txtHeight/2)-2);
                             }
                         }
 
@@ -519,10 +480,9 @@ L.LatLngGraticule = L.Layer.extend({
                     ctx.lineTo(rr.x-1, rr.y);
                     ctx.stroke();
                     if (self.options.showLabel && label) {
-                        var _yy = ll.y + (txtHeight/2)-2;
-                        ctx.fillText(convertDD2DMS(latstr, 'lat'), 0, _yy);//SRA
-                        //Uncomment to include the right graticule labels
-                        //ctx.fillText(convertDD2DMS(latstr, 'lat'), ww-txtWidth, _yy);
+                        var _yy = ll.y - (txtHeight/2) + 2;
+                        ctx.fillText(latstr, 0, _yy);
+                        ctx.fillText(latstr, ww-txtWidth, _yy);
                     }
                 }
             };
@@ -559,10 +519,10 @@ L.LatLngGraticule = L.Layer.extend({
 
                         if (self.options.showLabel && label && _prev_p != null) {
                             if (_prev_p.y > 8 && tt.y <= 8) {
-                                ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), txtHeight);//SRA
+                                ctx.fillText(lngstr, tt.x - (txtWidth/2), txtHeight);
                             }
                             else if (_prev_p.y >= hh && tt.y < hh) {
-                                ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), hh-2);//SRA
+                                ctx.fillText(lngstr, tt.x - (txtWidth/2), hh-2);
                             }
                         }
 
@@ -591,9 +551,8 @@ L.LatLngGraticule = L.Layer.extend({
                     ctx.stroke();
 
                     if (self.options.showLabel && label) {
-                        ctx.fillText(convertDD2DMS(lngstr, 'lng'), tt.x - (txtWidth/2), txtHeight+1);//SRA
-                        //Uncomment to include the bottom graticule labels
-                        //ctx.fillText(convertDD2DMS(lngstr, 'lng'), bb.x - (txtWidth/2), hh-3);
+                        ctx.fillText(lngstr, tt.x + 3, txtHeight+1);
+                        ctx.fillText(lngstr, bb.x + 3, hh-3);
                     }
                 }
             };
