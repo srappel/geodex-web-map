@@ -46,7 +46,7 @@ main {
 .slider:before {
   position: absolute;
   content: "";
-  height: 13px;
+  height: 14px;
   width: 13px;
   left: 2px;
   bottom: 2px;
