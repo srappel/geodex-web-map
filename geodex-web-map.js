@@ -1,4 +1,4 @@
-/*
+﻿/*
 --- the global Geodex object ---
 */
 	var Geodex = {
@@ -10,12 +10,7 @@
 			this.years.populate(); // populate the "years" drop-downs dynamically
 			this.series.getAll(); // populate the "series" drop-down dynamically
 			this.publishers.getAll(); // populate the "publsihers" drop-down dynamically
-			try {
-               this.map.initialize(); // initialize the map and run all functions that entails 
-            }
-            catch(err) {
-                alert(err)
-            }
+            this.map.initialize(); // initialize the map and run all functions that entails 
 			this.bookmarks.generateExportFields(); // dymaically create list of fields users may customize export report with
 			String.prototype.replaceAll = function(target, replacement) { // function needed to get rid of all apostrophes from search results (apostrophes break dynamically generated SQL)
 				return this.split(target).join(replacement);
@@ -27,7 +22,7 @@
 		
 		years: {
 			
-			min: 1819, // minimum year for the "years" dropdown
+			min: 1818, // minimum year for the "years" dropdown
 			
 			max: new Date().getFullYear(), // maximum year for the "years" dropdown (grabbed dynamically)
 			
@@ -627,7 +622,7 @@
 		
 		map: { // all of the stuff related to the map itself -- most of the Leaflet stuff will be here
 			// url to map service
-			service: 'http://webgis.uwm.edu/arcgisuwm/rest/services/AGSL/GeodexWebMapService/MapServer/0',
+			service: 'https://webgis.uwm.edu/arcgisuwm/rest/services/AGSL/GeodexWebMapService/MapServer/0',
                     
             // adds geocoder (through plug-in)
 			addGeocoder: function() {
