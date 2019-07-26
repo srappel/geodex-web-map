@@ -1355,14 +1355,3 @@
 			$('#map').hide();
 		}
 	});
-
-
-//function onMapClick(e) {
-//    console.log("You clicked the map at " + e.latlng);
-
-    //Adds click to print zoom level to console
-//    console.log('The Zoom Level is:' + theMap.getZoom());
-//}
-
-//theMap.on('click', onMapClick);    
-
